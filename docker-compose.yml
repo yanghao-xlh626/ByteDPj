@@ -1,136 +1,73 @@
 services:
-  zookeeper:
-    image: bitnami/zookeeper:3.7
-    container_name: zookeeper
-    hostname: zk1  
-    ports:
-      - "2181:2181"
-    networks:
-      - zk-kafka-net
-    environment:
-      - ALLOW_ANONYMOUS_LOGIN=yes
-    volumes:
-      - zookeeper_data:/bitnami/zookeeper
-
-  kafka:
-    image: bitnami/kafka:3.7
-    container_name: kafka
-    hostname: kaf1
-    ports:
-      - "9092:9092"
-    environment:
-      - KAFKA_CFG_ZOOKEEPER_CONNECT=zookeeper:2181
-      - KAFKA_CFG_ADVERTISED_LISTENERS=PLAINTEXT://kaf1:9092
-      - KAFKA_CFG_LISTENERS=PLAINTEXT://0.0.0.0:9092
-      - ALLOW_PLAINTEXT_LISTENER=yes
-      - KAFKA_CFG_AUTO_CREATE_TOPICS_ENABLE=false  # 禁用自动创建主题,这些交给kafka-init服务完成。
-      - KAFKA_CFG_NUM_PARTITIONS=3                 # 默认分区数
-      - KAFKA_CFG_DEFAULT_REPLICATION_FACTOR=1     # 副本因子
-    depends_on:
-      - zookeeper
-    networks:
-      - zk-kafka-net
-    healthcheck: # 在kafka服务中添加
-      test: ["CMD-SHELL", "kafka-topics.sh --list --bootstrap-server localhost:9092"]
-      interval: 10s
-      timeout: 5s
-      retries: 10
-    volumes:
-      - kafka_data:/bitnami/kafka
-      
-  kafka-init:
-    image: bitnami/kafka:3.7
-    depends_on:
-      kafka:
-        condition: service_healthy  # 等待kafka健康
-    networks:
-      - zk-kafka-net
-    command: |
-      bash -c "
-      echo '等待 Kafka 就绪...';
-      until kafka-topics.sh --list --bootstrap-server kaf1:9092; do
-      sleep 10;
-      done;
-      kafka-topics.sh --create --if-not-exists \
-        --bootstrap-server kafka:9092 \
-        --topic url-queue \
-        --partitions 3 \
-        --replication-factor 1;
-      echo '主题创建成功！'
-      "
-
   url-master:
-    build: ./services/url-master  # 新建的URL Master项目目录
+    build: ./services/url-master # 新建的URL Master项目目录
     container_name: url-master
     hostname: url-master
     ports:
-      - "8000:8000"  # 暴露HTTP接口
+      - "8000:8000" # 暴露HTTP接口
     networks:
-      - zk-kafka-net
-    environment:
-      - KAFKA_BOOTSTRAP_SERVERS=kaf1:9092
-      - KAFKA_TOPIC=url-queue  # 建议添加的Kafka主题配置
-    depends_on:
-      kafka:
-        condition: service_healthy
-      kafka-init:  # 新增依赖
-        condition: service_completed_successfully
+      - yuban_net
     command: tail -f /dev/null
     volumes:
-      - url_storage:/app/data  # 持久化存储URL状态
+      - type: bind
+        source: ./services/url-master/data
+        target: /app/data # 持久化存储URL状态
+      - type: bind
+        source: ./services/url-master/src
+        target: /app/src/ #开发的时候同步代码
+    #   python1:
+    #     build: ./services/spiders # 指向包含Dockerfile的目录
+    #     container_name: spidernode1
+    #     networks:
+    #       - zk-kafka-net
+    #     environment:
+    #       - KAFKA_BOOTSTRAP_SERVERS=kaf1:9092 # 使用Kafka服务名
+    #       - URL_MASTER=http://url-master:8000
+    #     depends_on:
+    #       kafka:
+    #         condition: service_healthy
+    #       kafka-init:  # 新增依赖
+    #         condition: service_completed_successfully
+    #     command: tail -f /dev/null
 
-  python1:
-    build: ./services/spiders # 指向包含Dockerfile的目录
-    container_name: spidernode1
-    networks:
-      - zk-kafka-net
-    environment:
-      - KAFKA_BOOTSTRAP_SERVERS=kaf1:9092 # 使用Kafka服务名
-      - URL_MASTER=http://url-master:8000
-    depends_on:
-      kafka:
-        condition: service_healthy
-      kafka-init:  # 新增依赖
-        condition: service_completed_successfully
-    command: tail -f /dev/null
+    #   python2:
+    #     build: ./services/spiders
+    #     container_name: spidernode2
+    #     networks:
+    #       - zk-kafka-net
+    #     environment:
+    #       - KAFKA_BOOTSTRAP_SERVERS=kaf1:9092
+    #       - URL_MASTER=http://url-master:8000
+    #     depends_on:
+    #       kafka:
+    #         condition: service_healthy
+    #       kafka-init:  # 新增依赖
+    #         condition: service_completed_successfully
+    #     command: tail -f /dev/null
 
-  python2:
-    build: ./services/spiders
-    container_name: spidernode2
-    networks:
-      - zk-kafka-net
-    environment:
-      - KAFKA_BOOTSTRAP_SERVERS=kaf1:9092
-      - URL_MASTER=http://url-master:8000
-    depends_on:
-      kafka:
-        condition: service_healthy
-      kafka-init:  # 新增依赖
-        condition: service_completed_successfully
-    command: tail -f /dev/null
+    #   python3:
+    #     build: ./services/spiders
+    #     container_name: spidernode3
+    #     networks:
+    #       - zk-kafka-net
+    #     environment:
+    #       - KAFKA_BOOTSTRAP_SERVERS=kaf1:9092
+    #       - URL_MASTER=http://url-master:8000
+    #     depends_on:
+    #       kafka:
+    #         condition: service_healthy
+    #       kafka-init:  # 新增依赖
+    #         condition: service_completed_successfully
+    #     command: tail -f /dev/null
 
-  python3:
-    build: ./services/spiders
-    container_name: spidernode3
-    networks:
-      - zk-kafka-net
-    environment:
-      - KAFKA_BOOTSTRAP_SERVERS=kaf1:9092
-      - URL_MASTER=http://url-master:8000
-    depends_on:
-      kafka:
-        condition: service_healthy
-      kafka-init:  # 新增依赖
-        condition: service_completed_successfully
-    command: tail -f /dev/null
-volumes:
-  zookeeper_data:
-    driver: local
-  kafka_data:
-    driver: local
-  url_storage:
-    driver: local
+    # volumes:
+    #   zookeeper_data:
+    #     driver: local
+    #   kafka_data:
+    #     driver: local
+    #   url_storage:
+    #     driver: local
 
 networks:
-  zk-kafka-net:
+  yuban_net:
     driver: bridge
