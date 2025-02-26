@@ -6,7 +6,7 @@ def init_db(DB_PATH):
         con = sqlite3.connect(DB_PATH)
         print('创建并连接成功')
         cur = con.cursor()
-        cur.execute("CREATE TABLE URL(ID INT PRIMARY KEY NOT NULL,URL TEXT NO NULL)")
+        cur.execute("CREATE TABLE URL(ID INTEGER PRIMARY KEY NOT NULL,URL TEXT NO NULL)")
         cur.execute("INSERT INTO URL (ID, URL) VALUES (1, 'https://www.example.com')")
         cur.execute("INSERT INTO URL (ID, URL) VALUES (2, 'https://www.google.com')")
         cur.execute("INSERT INTO URL (ID, URL) VALUES (3, 'https://www.github.com')")

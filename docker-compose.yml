@@ -1,35 +1,66 @@
 services:
-  url-master:
-    build: ./services/url-master # 新建的URL Master项目目录
-    container_name: url-master
-    hostname: url-master
+  url-storage:
+    build: ./services/url-storage # 新建的URL Master项目目录
+    container_name: url-storage
+    hostname: url-storage
     ports:
       - "8000:8000" # 暴露HTTP接口
     networks:
       - yuban_net
+    # command: [ "python", '/app/src/app.py' ]
     command: tail -f /dev/null
+    depends_on:
+      - url-manager
+    environment:
+      - PYTHONPATH=/app/src/grpc:/app/src
     volumes:
       - type: bind
-        source: ./services/url-master/data
+        source: ./services/url-storage/data
         target: /app/data # 持久化存储URL状态
       - type: bind
-        source: ./services/url-master/src
+        source: ./services/url-storage/src
         target: /app/src/ #开发的时候同步代码
-    #   python1:
-    #     build: ./services/spiders # 指向包含Dockerfile的目录
-    #     container_name: spidernode1
-    #     networks:
-    #       - zk-kafka-net
-    #     environment:
-    #       - KAFKA_BOOTSTRAP_SERVERS=kaf1:9092 # 使用Kafka服务名
-    #       - URL_MASTER=http://url-master:8000
-    #     depends_on:
-    #       kafka:
-    #         condition: service_healthy
-    #       kafka-init:  # 新增依赖
-    #         condition: service_completed_successfully
-    #     command: tail -f /dev/null
+      - type: bind
+        source: ./services/grpc/
+        target: /app/grpc/
 
+  url-manager:
+    build: ./services/url-manager
+    container_name: url-manager
+    hostname: url-manager
+    ports:
+      - "8001:8001"
+    networks:
+      - yuban_net
+    command: tail -f /dev/null
+    environment:
+      - PYTHONPATH=/app/grpc:/app/src
+    volumes:
+      - type: bind
+        source: ./services/url-manager/src
+        target: /app/src/ #开发的时候同步代码
+      - type: bind
+        source: ./services/grpc/
+        target: /app/grpc/
+
+  spider-node:
+    build: ./services/spiders
+    container_name: spiders-1
+    hostname: spiders-1
+    ports:
+      - "8002:8001"
+    networks:
+      - yuban_net
+    command: tail -f /dev/null
+    environment:
+      - PYTHONPATH=/app/grpc:/app/src
+    volumes:
+      - type: bind
+        source: ./services/grpc/
+        target: /app/grpc
+      - type: bind
+        source: ./services/spiders/src
+        target: /app/src/
     #   python2:
     #     build: ./services/spiders
     #     container_name: spidernode2

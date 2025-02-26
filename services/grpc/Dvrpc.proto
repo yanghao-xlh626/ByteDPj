@@ -1,0 +1,40 @@
+syntax = "proto3";
+
+message PushURLRequest{
+    string url = 1;
+}
+message PushURLReply{
+    string reply = 1;
+}
+
+message RegisteRequest{
+    string container_name=1;
+}
+
+message RegisteResponse{
+    string core_ip =1;
+}
+
+service URLManager{
+    rpc PushURL (PushURLRequest) returns (PushURLReply) {}
+    rpc Registe (RegisteRequest) returns (RegisteResponse) {}
+}
+
+message DistributeURLRequest{
+    string url =1;
+}
+
+message DistributeURLResponse{
+    bool reply =1;
+}
+message HeartbeatQuery{
+    string query=1;
+}
+message HeartbeatReply{
+    string reply=1;
+}
+service SpidersNode{
+    rpc Heartbeat (HeartbeatQuery) returns (HeartbeatReply) {}
+    rpc DistributeURL (DistributeURLRequest) returns (DistributeURLResponse) {}
+}
+
