@@ -24,7 +24,7 @@ _sym_db = _symbol_database.Default()
 
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0b\x44vrpc.proto\"\x1d\n\x0ePushURLRequest\x12\x0b\n\x03url\x18\x01 \x01(\t\"\x1d\n\x0cPushURLReply\x12\r\n\x05reply\x18\x01 \x01(\t\"(\n\x0eRegisteRequest\x12\x16\n\x0e\x63ontainer_name\x18\x01 \x01(\t\"\"\n\x0fRegisteResponse\x12\x0f\n\x07\x63ore_ip\x18\x01 \x01(\t\"#\n\x14\x44istributeURLRequest\x12\x0b\n\x03url\x18\x01 \x01(\t\"&\n\x15\x44istributeURLResponse\x12\r\n\x05reply\x18\x01 \x01(\x08\"\x1f\n\x0eHeartbeatQuery\x12\r\n\x05query\x18\x01 \x01(\t\"\x1f\n\x0eHeartbeatReply\x12\r\n\x05reply\x18\x01 \x01(\t2i\n\nURLManager\x12+\n\x07PushURL\x12\x0f.PushURLRequest\x1a\r.PushURLReply\"\x00\x12.\n\x07Registe\x12\x0f.RegisteRequest\x1a\x10.RegisteResponse\"\x00\x32\x80\x01\n\x0bSpidersNode\x12/\n\tHeartbeat\x12\x0f.HeartbeatQuery\x1a\x0f.HeartbeatReply\"\x00\x12@\n\rDistributeURL\x12\x15.DistributeURLRequest\x1a\x16.DistributeURLResponse\"\x00\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0b\x44vrpc.proto\"\x1d\n\x0ePushURLRequest\x12\x0b\n\x03url\x18\x01 \x01(\t\"\x1d\n\x0cPushURLReply\x12\r\n\x05reply\x18\x01 \x01(\t\"!\n\x0eRegisteRequest\x12\x0f\n\x07node_ip\x18\x01 \x01(\t\"\"\n\x0fRegisteResponse\x12\x0f\n\x07\x63ore_ip\x18\x01 \x01(\t\"#\n\x14\x44istributeURLRequest\x12\x0b\n\x03url\x18\x01 \x01(\t\"&\n\x15\x44istributeURLResponse\x12\r\n\x05reply\x18\x01 \x01(\x08\"\x1f\n\x0eHeartbeatQuery\x12\r\n\x05query\x18\x01 \x01(\t\"\x1f\n\x0eHeartbeatReply\x12\r\n\x05reply\x18\x01 \x01(\t\">\n\x0b\x46olderChunk\x12\x0c\n\x04\x64\x61ta\x18\x01 \x01(\x0c\x12\x11\n\tfile_path\x18\x02 \x01(\t\x12\x0e\n\x06is_dir\x18\x03 \x01(\x08\"0\n\x0cUploadStatus\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t2i\n\nURLManager\x12+\n\x07PushURL\x12\x0f.PushURLRequest\x1a\r.PushURLReply\"\x00\x12.\n\x07Registe\x12\x0f.RegisteRequest\x1a\x10.RegisteResponse\"\x00\x32\x80\x01\n\x0bSpidersNode\x12/\n\tHeartbeat\x12\x0f.HeartbeatQuery\x1a\x0f.HeartbeatReply\"\x00\x12@\n\rDistributeURL\x12\x15.DistributeURLRequest\x1a\x16.DistributeURLResponse\"\x00\x32=\n\x0c\x46ileTransfer\x12-\n\x0cUploadFolder\x12\x0c.FolderChunk\x1a\r.UploadStatus(\x01\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
@@ -36,19 +36,25 @@ if not _descriptor._USE_C_DESCRIPTORS:
   _globals['_PUSHURLREPLY']._serialized_start=46
   _globals['_PUSHURLREPLY']._serialized_end=75
   _globals['_REGISTEREQUEST']._serialized_start=77
-  _globals['_REGISTEREQUEST']._serialized_end=117
-  _globals['_REGISTERESPONSE']._serialized_start=119
-  _globals['_REGISTERESPONSE']._serialized_end=153
-  _globals['_DISTRIBUTEURLREQUEST']._serialized_start=155
-  _globals['_DISTRIBUTEURLREQUEST']._serialized_end=190
-  _globals['_DISTRIBUTEURLRESPONSE']._serialized_start=192
-  _globals['_DISTRIBUTEURLRESPONSE']._serialized_end=230
-  _globals['_HEARTBEATQUERY']._serialized_start=232
-  _globals['_HEARTBEATQUERY']._serialized_end=263
-  _globals['_HEARTBEATREPLY']._serialized_start=265
-  _globals['_HEARTBEATREPLY']._serialized_end=296
-  _globals['_URLMANAGER']._serialized_start=298
-  _globals['_URLMANAGER']._serialized_end=403
-  _globals['_SPIDERSNODE']._serialized_start=406
-  _globals['_SPIDERSNODE']._serialized_end=534
+  _globals['_REGISTEREQUEST']._serialized_end=110
+  _globals['_REGISTERESPONSE']._serialized_start=112
+  _globals['_REGISTERESPONSE']._serialized_end=146
+  _globals['_DISTRIBUTEURLREQUEST']._serialized_start=148
+  _globals['_DISTRIBUTEURLREQUEST']._serialized_end=183
+  _globals['_DISTRIBUTEURLRESPONSE']._serialized_start=185
+  _globals['_DISTRIBUTEURLRESPONSE']._serialized_end=223
+  _globals['_HEARTBEATQUERY']._serialized_start=225
+  _globals['_HEARTBEATQUERY']._serialized_end=256
+  _globals['_HEARTBEATREPLY']._serialized_start=258
+  _globals['_HEARTBEATREPLY']._serialized_end=289
+  _globals['_FOLDERCHUNK']._serialized_start=291
+  _globals['_FOLDERCHUNK']._serialized_end=353
+  _globals['_UPLOADSTATUS']._serialized_start=355
+  _globals['_UPLOADSTATUS']._serialized_end=403
+  _globals['_URLMANAGER']._serialized_start=405
+  _globals['_URLMANAGER']._serialized_end=510
+  _globals['_SPIDERSNODE']._serialized_start=513
+  _globals['_SPIDERSNODE']._serialized_end=641
+  _globals['_FILETRANSFER']._serialized_start=643
+  _globals['_FILETRANSFER']._serialized_end=704
 # @@protoc_insertion_point(module_scope)

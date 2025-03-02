@@ -50,13 +50,15 @@ class URLManagerServicer(object):
     """Missing associated documentation comment in .proto file."""
 
     def PushURL(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """url-manager的服务，接受flask的url并回应完成接收
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
     def Registe(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """接受爬虫节点的注册并返回自己的ip
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
@@ -165,7 +167,8 @@ class SpidersNodeServicer(object):
     """Missing associated documentation comment in .proto file."""
 
     def Heartbeat(self, request, context):
-        """Missing associated documentation comment in .proto file."""
+        """spider的服务段，接受url-manager的heartebeat和url并做出应答
+        """
         context.set_code(grpc.StatusCode.UNIMPLEMENTED)
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
@@ -244,6 +247,79 @@ class SpidersNode(object):
             '/SpidersNode/DistributeURL',
             Dvrpc__pb2.DistributeURLRequest.SerializeToString,
             Dvrpc__pb2.DistributeURLResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+
+class FileTransferStub(object):
+    """Missing associated documentation comment in .proto file."""
+
+    def __init__(self, channel):
+        """Constructor.
+
+        Args:
+            channel: A grpc.Channel.
+        """
+        self.UploadFolder = channel.stream_unary(
+                '/FileTransfer/UploadFolder',
+                request_serializer=Dvrpc__pb2.FolderChunk.SerializeToString,
+                response_deserializer=Dvrpc__pb2.UploadStatus.FromString,
+                _registered_method=True)
+
+
+class FileTransferServicer(object):
+    """Missing associated documentation comment in .proto file."""
+
+    def UploadFolder(self, request_iterator, context):
+        """客户端流式上传文件夹
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
+
+def add_FileTransferServicer_to_server(servicer, server):
+    rpc_method_handlers = {
+            'UploadFolder': grpc.stream_unary_rpc_method_handler(
+                    servicer.UploadFolder,
+                    request_deserializer=Dvrpc__pb2.FolderChunk.FromString,
+                    response_serializer=Dvrpc__pb2.UploadStatus.SerializeToString,
+            ),
+    }
+    generic_handler = grpc.method_handlers_generic_handler(
+            'FileTransfer', rpc_method_handlers)
+    server.add_generic_rpc_handlers((generic_handler,))
+    server.add_registered_method_handlers('FileTransfer', rpc_method_handlers)
+
+
+ # This class is part of an EXPERIMENTAL API.
+class FileTransfer(object):
+    """Missing associated documentation comment in .proto file."""
+
+    @staticmethod
+    def UploadFolder(request_iterator,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.stream_unary(
+            request_iterator,
+            target,
+            '/FileTransfer/UploadFolder',
+            Dvrpc__pb2.FolderChunk.SerializeToString,
+            Dvrpc__pb2.UploadStatus.FromString,
             options,
             channel_credentials,
             insecure,

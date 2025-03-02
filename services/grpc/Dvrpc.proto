@@ -1,40 +1,71 @@
 syntax = "proto3";
 
 message PushURLRequest{
+    //flask节点发送url字段
     string url = 1;
 }
 message PushURLReply{
+    //url-manager节点接收到url后发送reply
     string reply = 1;
 }
 
 message RegisteRequest{
-    string container_name=1;
+    //spiders节点启动后向url-manager节点注册自己的ip
+    string node_ip=1;
 }
 
 message RegisteResponse{
+    //url-manager节点收到注册消息后告知爬虫自己的ip
     string core_ip =1;
 }
 
 service URLManager{
+    //url-manager的服务，接受flask的url并回应完成接收
     rpc PushURL (PushURLRequest) returns (PushURLReply) {}
+    //接受爬虫节点的注册并返回自己的ip
     rpc Registe (RegisteRequest) returns (RegisteResponse) {}
 }
 
+
+
 message DistributeURLRequest{
+    //url-manger向爬虫节点分发url
     string url =1;
 }
-
 message DistributeURLResponse{
+    //爬虫节点接受到url后的应答
     bool reply =1;
 }
 message HeartbeatQuery{
+    //url-manager在发送url前的heartbeat
     string query=1;
 }
 message HeartbeatReply{
+    //spider的回应
     string reply=1;
 }
 service SpidersNode{
+    //spider的服务段，接受url-manager的heartebeat和url并做出应答
     rpc Heartbeat (HeartbeatQuery) returns (HeartbeatReply) {}
     rpc DistributeURL (DistributeURLRequest) returns (DistributeURLResponse) {}
 }
 
+
+
+message FolderChunk{
+    //spider节点发送的文件流，分别为文件转化的数据，文件名，文件在文件夹种的路径，是否为目录
+    bytes data = 1;
+    // 文件在的路径,如同transferdir/1.jpg
+    string file_path = 2;
+    // 是否是目录
+    bool is_dir = 3;
+}
+message UploadStatus {
+    //storage节点回应spider的上传请求。
+    bool success = 1;
+    string message = 2;
+}
+service FileTransfer {
+  // 客户端流式上传文件夹
+  rpc UploadFolder(stream FolderChunk) returns (UploadStatus);
+}

@@ -35,12 +35,12 @@ class URLManager(Dvrpc_pb2_grpc.URLManagerServicer):
             thread(self.urlpool,self.registers) # NOTE:这里需要有一个函数进行url的分发
         return response
     def Registe(self,request,context):
-        print(f'已接受到节点{request.container_name}的注册请求')
-        self.__ipadd__(request.container_name)
+        print(f'已接受到节点{request.node_ip}的注册请求')
+        self.__ipadd__(request.node_ip)
         ip = socket.gethostbyname(socket.gethostname())
         response = Dvrpc_pb2.RegisteResponse(core_ip=f'{ip}')
         print(self.registers)
-        print(f'已注册完成，正在知会{request.container_name}')
+        print(f'已注册完成，正在知会{request.node_ip}')
         return response
 
 def url_send__(url,registers):

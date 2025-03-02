@@ -7,7 +7,7 @@ services:
       - "8000:8000" # 暴露HTTP接口
     networks:
       - yuban_net
-    # command: [ "python", '/app/src/app.py' ]
+#    command: [ "python", '/app/src/app.py' ]
     command: tail -f /dev/null
     depends_on:
       - url-manager
@@ -43,10 +43,13 @@ services:
         source: ./services/grpc/
         target: /app/grpc/
 
-  spider-node:
+  spider-node1:
     build: ./services/spiders
     container_name: spiders-1
     hostname: spiders-1
+    depends_on:
+      - url-manager
+      - down_disk
     ports:
       - "8002:8001"
     networks:
@@ -61,43 +64,69 @@ services:
       - type: bind
         source: ./services/spiders/src
         target: /app/src/
-    #   python2:
-    #     build: ./services/spiders
-    #     container_name: spidernode2
-    #     networks:
-    #       - zk-kafka-net
-    #     environment:
-    #       - KAFKA_BOOTSTRAP_SERVERS=kaf1:9092
-    #       - URL_MASTER=http://url-master:8000
-    #     depends_on:
-    #       kafka:
-    #         condition: service_healthy
-    #       kafka-init:  # 新增依赖
-    #         condition: service_completed_successfully
-    #     command: tail -f /dev/null
 
-    #   python3:
-    #     build: ./services/spiders
-    #     container_name: spidernode3
-    #     networks:
-    #       - zk-kafka-net
-    #     environment:
-    #       - KAFKA_BOOTSTRAP_SERVERS=kaf1:9092
-    #       - URL_MASTER=http://url-master:8000
-    #     depends_on:
-    #       kafka:
-    #         condition: service_healthy
-    #       kafka-init:  # 新增依赖
-    #         condition: service_completed_successfully
-    #     command: tail -f /dev/null
+  spider-node2:
+    build: ./services/spiders
+    container_name: spiders-2
+    hostname: spiders-2
+    depends_on:
+      - url-manager
+      - down_disk
+    ports:
+      - "8003:8001"
+    networks:
+      - yuban_net
+    command: tail -f /dev/null
+    environment:
+      - PYTHONPATH=/app/grpc:/app/src
+    volumes:
+      - type: bind
+        source: ./services/grpc/
+        target: /app/grpc
+      - type: bind
+        source: ./services/spiders/src
+        target: /app/src/
 
-    # volumes:
-    #   zookeeper_data:
-    #     driver: local
-    #   kafka_data:
-    #     driver: local
-    #   url_storage:
-    #     driver: local
+  down_disk:
+    build: ./services/spiders
+    container_name: down-disk
+    hostname: down-disk
+    ports:
+      - "8080:8001"
+    networks:
+      - yuban_net
+    command: tail -f /dev/null
+    environment:
+      - PYTHONPATH=/app/grpc:/app/src
+    volumes:
+      - type: bind
+        source: ./services/grpc/
+        target: /app/grpc
+      - type: bind
+        source: ./services/data-storage/src
+        target: /app/src/
+      - type: bind
+        source: ./services/data-storage/binary_data
+        target: /app/binary_data/
+
+#  experiment:
+#    build: ./services/experiment
+#    container_name: experiment
+#    hostname: experiment
+#    ports:
+#      - "9000:8001"
+#    networks:
+#      - yuban_net
+#    command: tail -f /dev/null
+#    environment:
+#      - PYTHONPATH=/app/grpc:/app/src
+#    volumes:
+#      - type: bind
+#        source: ./services/grpc/
+#        target: /app/grpc
+#      - type: bind
+#        source: ./services/experiment/src
+#        target: /app/src/
 
 networks:
   yuban_net:

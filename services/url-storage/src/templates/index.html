@@ -1,5 +1,47 @@
-<form method="post">
-    <label>URL:</label>
-    <input type="text" name="url" value="{{ request.form['url'] }}"></input>
-    <button>Save</button>
-</form>
+{#<form method="post">#}
+{#    <label>URL:</label>#}
+{#    <input type="text" name="url" value="{{ request.form['url'] }}"></input>#}
+{#    <button>Save</button>#}
+{#</form>#}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>URL 添加工具</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+        }
+        form {
+            margin-top: 20px;
+        }
+        label {
+            display: inline-block;
+            width: 40px;
+            margin-right: 10px;
+        }
+        textarea {
+            width: 600px; /* 设置宽度 */
+            height: 200px; /* 设置高度 */
+            padding: 5px; /* 内边距 */
+            font-size: 16px; /* 字体大小 */
+            resize: none; /* 禁止用户调整大小 */
+        }
+        button {
+            padding: 5px 10px;
+            font-size: 16px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <h1>URL 添加工具</h1>
+    <form method="post">
+        <label for="url">URL:</label>
+        <textarea id="urls" name="urls" required>{{ request.form['urls'] }}</textarea>
+        <button type="submit">保存</button>
+    </form>
+</body>
+</html>
