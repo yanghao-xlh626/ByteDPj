@@ -8,6 +8,11 @@ from parsel import Selector
 import config
 import yaml
 import push
+import sys
+sys.path.append('/app/grpc')
+import grpc
+import Dvrpc_pb2
+import Dvrpc_pb2_grpc
 PATH=r'.\Dvspider'
 
 
@@ -52,7 +57,7 @@ def read_data():
 def remove_data():
     if os.path.exists("data.txt"):
         os.remove("data.txt")
-# 我负责创建目录并下载图片海报等。
+# 我负责创建目录并下载图片海报等，下载大量的图片，调用download_img
 def download_imgs(ip,animate):
     PATH = f'./{ip}__{animate.title}/'
     print(PATH)
@@ -65,13 +70,14 @@ def download_imgs(ip,animate):
     yaml_path=f'{PATH}/{animate.title}.yaml'
     to_yaml(animate,yaml_path)
     remove_data()
-    push.push(PATH)
+    return PATH
 
 
 
 # 我负责作为一个worker，每次调用下载一个图片
 def download_img(url,save_path):
     try:
+        # 此处是http的请求和回应
         response = requests.get(url)
         response.raise_for_status()  # 检查请求是否成功
         with open(save_path, 'wb') as file:
@@ -105,6 +111,7 @@ def animate_get(url):
         ret = read_data()
     return ret
 
+# 将数据抽取出来保存为animate对象
 def parse_data(context):
     selector = Selector(text=context)
 
@@ -134,12 +141,23 @@ def parse_data(context):
     animate=Animate(title,poster_url,marks,introduce,tags,roles_cvs_dict,picture_url,detail_dict,comments)
     return animate
 
+# 这里需要有一个可以函数构建客户端请求，发送url
+def logURL(response,url):
+    if response.success:
+        try:
+            channel =grpc.insecure_channel(f'url-manager:8001')
+            stub = Dvrpc_pb2_grpc.URLManagerStub(channel)
+            stub.URLToDB(Dvrpc_pb2.URLToDBRequest(url=url))
+        except grpc.RpcError as e:
+            print(f"记录已爬取的站点失败: {e.details()}")
 
 
 def main(ip,url):
     data=animate_get(url)
     animate = parse_data(data)
-    download_imgs(ip,animate)
+    path=download_imgs(ip,animate)
+    response=push.push(path)
+    logURL(response,url)
     config.thread_current -= 1
 
 # main('localhost','https://bgm.tv/subject/428735')

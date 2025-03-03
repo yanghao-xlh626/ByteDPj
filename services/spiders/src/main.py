@@ -11,7 +11,6 @@ import socket
 import animate
 import config
 import threading
-import push
 
 manager_ip=None
 def send_ip():

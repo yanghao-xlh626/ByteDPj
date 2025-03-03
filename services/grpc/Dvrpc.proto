@@ -1,4 +1,5 @@
 syntax = "proto3";
+import "google/protobuf/empty.proto";
 
 message PushURLRequest{
     //flask节点发送url字段
@@ -18,12 +19,17 @@ message RegisteResponse{
     //url-manager节点收到注册消息后告知爬虫自己的ip
     string core_ip =1;
 }
+message URLToDBRequest{
+    string url=1;
+}
 
 service URLManager{
     //url-manager的服务，接受flask的url并回应完成接收
     rpc PushURL (PushURLRequest) returns (PushURLReply) {}
     //接受爬虫节点的注册并返回自己的ip
     rpc Registe (RegisteRequest) returns (RegisteResponse) {}
+    //接受爬虫节点的通知，将完成的url写入数据库
+    rpc URLToDB (URLToDBRequest) returns (google.protobuf.Empty) {}
 }
 
 

@@ -11,7 +11,6 @@ import time
 
 
 ## 数据库
-DB_PATH=r"/app/data/database.db"
 app = Flask(__name__)
 
 
@@ -44,11 +43,11 @@ def add_url():
             for url in urls:
                 client = GrpcClient('url-manager:8001')
                 if client.send_url(url):
-                    message = f"URL: {url} 发送成功！"
+                    print(f"URL: {url} 发送成功！")
                     time.sleep(0.3)
                 else:
-                    message = f"URL: {url} 发送失败！"
-    return render_template('index.html', message=message)
+                    print(f"URL: {url} 发送失败！")
+    return render_template('index.html')
 
 # 主函数
 if __name__ == '__main__':

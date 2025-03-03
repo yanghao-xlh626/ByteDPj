@@ -8,11 +8,14 @@ import time
 import threading
 import socket
 import config
+import sqlite3
+import os
+from google.protobuf.empty_pb2 import Empty
 # 整体大概是这样，grpc服务端负责三件事，
 # 第一件，接受爬虫节点启动后的注册请求，
 # 第二件，接受来自flask推过来的url，并载入队列
 # 多线程函数负责将队列中的url异步分发。会先调用heartbeat确定节点的存活，再根据节点状态对元数据进行维护，在节点正常的时候发送url
-
+db_path='/app/URLdatabase/Logdb.db'
 
 class URLManager(Dvrpc_pb2_grpc.URLManagerServicer):
     def __init__(self):
@@ -27,12 +30,19 @@ class URLManager(Dvrpc_pb2_grpc.URLManagerServicer):
             self.registers.append(ip)
     def PushURL(self,request,context):
         print(f'已经成功接收到URL:{request.url}')
-        response = Dvrpc_pb2.PushURLReply(reply="True")
-        self.urlpool.append(request.url)
-        print(f"URL:{request.url}已转储成功")
+        if check_DB(request.url):
+            print(f'此url{request.url}已经爬取过了，请输入后续任务吧')
+            response =Dvrpc_pb2.PushURLReply(reply="False")
+            return response
+        if request.url not in self.urlpool:
+            self.urlpool.append(request.url)
+            print(f"URL:{request.url}已转储成功")
+        else:
+            print(f'URL:{request.url}已经被worker领取并正在处理中。')
         # NOTE:这里需要调用一个函数进行对url的数据池进行判断，如果达到设定的阈值就启动新的节点
-        if config.status==0:#第一次收到url的时候基本register已经注册，此时直接创建线程
+        if config.status==0:#用于多线程环境，只要有一个线程启动就会加个锁，此后这个线程专注于分发，并且再也不会启动其他线程。
             thread(self.urlpool,self.registers) # NOTE:这里需要有一个函数进行url的分发
+        response = Dvrpc_pb2.PushURLReply(reply="True")
         return response
     def Registe(self,request,context):
         print(f'已接受到节点{request.node_ip}的注册请求')
@@ -42,12 +52,69 @@ class URLManager(Dvrpc_pb2_grpc.URLManagerServicer):
         print(self.registers)
         print(f'已注册完成，正在知会{request.node_ip}')
         return response
+    def URLToDB(self,request,context):
+        try:
+            print(f'已经接受到了URL入库请求:{request.url}')
+            # TODO:处理数据写入db
+            log_to_DB(request.url)
+            return Empty()
+        except Exception as e:
+            context.set_code(grpc.StatusCode.INTERNAL)
+            context.set_details(f'处理 URLToDB 请求时出错: {str(e)}')
+            return Empty()
+
+
+#向数据库写入url
+def log_to_DB(url):
+    if not os.path.exists(db_path):
+        DB_init()
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    # 确保表存在
+    try:
+        cursor.execute('INSERT INTO urls (url) VALUES (?)', (url,))
+        conn.commit()
+        print(f"URL '{url}' 已成功入库。")
+    except sqlite3.Error as e:
+        print(f"插入 URL 时发生错误: {e}")
+    finally:
+        conn.close()
+def DB_init():
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute('''CREATE TABLE IF NOT EXISTS urls
+                      (
+                          id
+                          INTEGER
+                          PRIMARY
+                          KEY
+                          AUTOINCREMENT,
+                          url
+                          TEXT
+                          UNIQUE
+                      )''')
+
+    # 插入示例 URL
+    cursor.execute("INSERT OR IGNORE INTO urls (url) VALUES ('www.example.com')")
+
+    conn.commit()
+    conn.close()
+# 查表，查到指定url会返回True
+def check_DB(url):
+    if not os.path.exists(db_path):
+        DB_init()
+    conn = sqlite3.connect(db_path)
+    cursor = conn.cursor()
+    cursor.execute("SELECT 1 FROM urls WHERE url = ?", (url,))
+    result = cursor.fetchone()
+    conn.close()
+    return result is not None
 
 def url_send__(url,registers):
     print(f'正在分发url，共有{len(url)}条')
+    i = 0
     while True:
         while url and registers:
-            i=0
             register_size=len(registers)
             send_url=url.pop(0)
             i=(i+1)%register_size
@@ -56,6 +123,7 @@ def url_send__(url,registers):
             if ret ==1:
                 url_send__client(send_register,send_url,urlpool=url)
             elif ret==4:
+                # 这里url会被回滚，但是发送对象不会回滚，会继续向后选取对象，等后面的够完成了后会轮询回来的。
                 url.insert(0, send_url)
         time.sleep(5)        
 
@@ -98,7 +166,9 @@ def url_send__client(ip,url,urlpool):
         print(f'已经得到{ip}的响应，等待它的爬取。')
     else:
         urlpool.insert(0,url)
-        print(f'节点忙，正在尝试下一个节点')
+        print(f'节点忙，五秒后尝试下一个节点')
+        time.sleep(5)
+
     
 def thread(url,registers):
     config.status=1

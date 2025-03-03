@@ -4,6 +4,7 @@ import grpc
 import warnings
 
 import Dvrpc_pb2 as Dvrpc__pb2
+from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 
 GRPC_GENERATED_VERSION = '1.70.0'
 GRPC_VERSION = grpc.__version__
@@ -44,6 +45,11 @@ class URLManagerStub(object):
                 request_serializer=Dvrpc__pb2.RegisteRequest.SerializeToString,
                 response_deserializer=Dvrpc__pb2.RegisteResponse.FromString,
                 _registered_method=True)
+        self.URLToDB = channel.unary_unary(
+                '/URLManager/URLToDB',
+                request_serializer=Dvrpc__pb2.URLToDBRequest.SerializeToString,
+                response_deserializer=google_dot_protobuf_dot_empty__pb2.Empty.FromString,
+                _registered_method=True)
 
 
 class URLManagerServicer(object):
@@ -63,6 +69,13 @@ class URLManagerServicer(object):
         context.set_details('Method not implemented!')
         raise NotImplementedError('Method not implemented!')
 
+    def URLToDB(self, request, context):
+        """接受爬虫节点的通知，将完成的url写入数据库
+        """
+        context.set_code(grpc.StatusCode.UNIMPLEMENTED)
+        context.set_details('Method not implemented!')
+        raise NotImplementedError('Method not implemented!')
+
 
 def add_URLManagerServicer_to_server(servicer, server):
     rpc_method_handlers = {
@@ -75,6 +88,11 @@ def add_URLManagerServicer_to_server(servicer, server):
                     servicer.Registe,
                     request_deserializer=Dvrpc__pb2.RegisteRequest.FromString,
                     response_serializer=Dvrpc__pb2.RegisteResponse.SerializeToString,
+            ),
+            'URLToDB': grpc.unary_unary_rpc_method_handler(
+                    servicer.URLToDB,
+                    request_deserializer=Dvrpc__pb2.URLToDBRequest.FromString,
+                    response_serializer=google_dot_protobuf_dot_empty__pb2.Empty.SerializeToString,
             ),
     }
     generic_handler = grpc.method_handlers_generic_handler(
@@ -131,6 +149,33 @@ class URLManager(object):
             '/URLManager/Registe',
             Dvrpc__pb2.RegisteRequest.SerializeToString,
             Dvrpc__pb2.RegisteResponse.FromString,
+            options,
+            channel_credentials,
+            insecure,
+            call_credentials,
+            compression,
+            wait_for_ready,
+            timeout,
+            metadata,
+            _registered_method=True)
+
+    @staticmethod
+    def URLToDB(request,
+            target,
+            options=(),
+            channel_credentials=None,
+            call_credentials=None,
+            insecure=False,
+            compression=None,
+            wait_for_ready=None,
+            timeout=None,
+            metadata=None):
+        return grpc.experimental.unary_unary(
+            request,
+            target,
+            '/URLManager/URLToDB',
+            Dvrpc__pb2.URLToDBRequest.SerializeToString,
+            google_dot_protobuf_dot_empty__pb2.Empty.FromString,
             options,
             channel_credentials,
             insecure,

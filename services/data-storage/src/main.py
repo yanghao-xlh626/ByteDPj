@@ -30,14 +30,14 @@ class FileTransfer(Dvrpc_pb2_grpc.FileTransferServicer):
                     print(f'正在下载文件：{file}')
                     with open(file,'ab') as f:
                         f.write(chunk.data)
-            response = Dvrpc_pb2.UploadStatus(success=True,message='正在输出')
+            response = Dvrpc_pb2.UploadStatus(success=True,message='输出完成')
             return response
         except Exception as e:
             # 打印完整的错误信息
             print(f"Error in UploadFolder: {e}")
             context.set_code(grpc.StatusCode.INTERNAL)
             context.set_details(str(e))
-            return Dvrpc_pb2.UploadResponse(message="Upload failed")
+            return Dvrpc_pb2.UploadResponse(sucess=False,message="Upload failed")
 
 
 

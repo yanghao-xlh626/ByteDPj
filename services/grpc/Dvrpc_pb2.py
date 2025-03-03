@@ -22,39 +22,42 @@ _runtime_version.ValidateProtobufRuntimeVersion(
 _sym_db = _symbol_database.Default()
 
 
+from google.protobuf import empty_pb2 as google_dot_protobuf_dot_empty__pb2
 
 
-DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0b\x44vrpc.proto\"\x1d\n\x0ePushURLRequest\x12\x0b\n\x03url\x18\x01 \x01(\t\"\x1d\n\x0cPushURLReply\x12\r\n\x05reply\x18\x01 \x01(\t\"!\n\x0eRegisteRequest\x12\x0f\n\x07node_ip\x18\x01 \x01(\t\"\"\n\x0fRegisteResponse\x12\x0f\n\x07\x63ore_ip\x18\x01 \x01(\t\"#\n\x14\x44istributeURLRequest\x12\x0b\n\x03url\x18\x01 \x01(\t\"&\n\x15\x44istributeURLResponse\x12\r\n\x05reply\x18\x01 \x01(\x08\"\x1f\n\x0eHeartbeatQuery\x12\r\n\x05query\x18\x01 \x01(\t\"\x1f\n\x0eHeartbeatReply\x12\r\n\x05reply\x18\x01 \x01(\t\">\n\x0b\x46olderChunk\x12\x0c\n\x04\x64\x61ta\x18\x01 \x01(\x0c\x12\x11\n\tfile_path\x18\x02 \x01(\t\x12\x0e\n\x06is_dir\x18\x03 \x01(\x08\"0\n\x0cUploadStatus\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t2i\n\nURLManager\x12+\n\x07PushURL\x12\x0f.PushURLRequest\x1a\r.PushURLReply\"\x00\x12.\n\x07Registe\x12\x0f.RegisteRequest\x1a\x10.RegisteResponse\"\x00\x32\x80\x01\n\x0bSpidersNode\x12/\n\tHeartbeat\x12\x0f.HeartbeatQuery\x1a\x0f.HeartbeatReply\"\x00\x12@\n\rDistributeURL\x12\x15.DistributeURLRequest\x1a\x16.DistributeURLResponse\"\x00\x32=\n\x0c\x46ileTransfer\x12-\n\x0cUploadFolder\x12\x0c.FolderChunk\x1a\r.UploadStatus(\x01\x62\x06proto3')
+DESCRIPTOR = _descriptor_pool.Default().AddSerializedFile(b'\n\x0b\x44vrpc.proto\x1a\x1bgoogle/protobuf/empty.proto\"\x1d\n\x0ePushURLRequest\x12\x0b\n\x03url\x18\x01 \x01(\t\"\x1d\n\x0cPushURLReply\x12\r\n\x05reply\x18\x01 \x01(\t\"!\n\x0eRegisteRequest\x12\x0f\n\x07node_ip\x18\x01 \x01(\t\"\"\n\x0fRegisteResponse\x12\x0f\n\x07\x63ore_ip\x18\x01 \x01(\t\"\x1d\n\x0eURLToDBRequest\x12\x0b\n\x03url\x18\x01 \x01(\t\"#\n\x14\x44istributeURLRequest\x12\x0b\n\x03url\x18\x01 \x01(\t\"&\n\x15\x44istributeURLResponse\x12\r\n\x05reply\x18\x01 \x01(\x08\"\x1f\n\x0eHeartbeatQuery\x12\r\n\x05query\x18\x01 \x01(\t\"\x1f\n\x0eHeartbeatReply\x12\r\n\x05reply\x18\x01 \x01(\t\">\n\x0b\x46olderChunk\x12\x0c\n\x04\x64\x61ta\x18\x01 \x01(\x0c\x12\x11\n\tfile_path\x18\x02 \x01(\t\x12\x0e\n\x06is_dir\x18\x03 \x01(\x08\"0\n\x0cUploadStatus\x12\x0f\n\x07success\x18\x01 \x01(\x08\x12\x0f\n\x07message\x18\x02 \x01(\t2\x9f\x01\n\nURLManager\x12+\n\x07PushURL\x12\x0f.PushURLRequest\x1a\r.PushURLReply\"\x00\x12.\n\x07Registe\x12\x0f.RegisteRequest\x1a\x10.RegisteResponse\"\x00\x12\x34\n\x07URLToDB\x12\x0f.URLToDBRequest\x1a\x16.google.protobuf.Empty\"\x00\x32\x80\x01\n\x0bSpidersNode\x12/\n\tHeartbeat\x12\x0f.HeartbeatQuery\x1a\x0f.HeartbeatReply\"\x00\x12@\n\rDistributeURL\x12\x15.DistributeURLRequest\x1a\x16.DistributeURLResponse\"\x00\x32=\n\x0c\x46ileTransfer\x12-\n\x0cUploadFolder\x12\x0c.FolderChunk\x1a\r.UploadStatus(\x01\x62\x06proto3')
 
 _globals = globals()
 _builder.BuildMessageAndEnumDescriptors(DESCRIPTOR, _globals)
 _builder.BuildTopDescriptorsAndMessages(DESCRIPTOR, 'Dvrpc_pb2', _globals)
 if not _descriptor._USE_C_DESCRIPTORS:
   DESCRIPTOR._loaded_options = None
-  _globals['_PUSHURLREQUEST']._serialized_start=15
-  _globals['_PUSHURLREQUEST']._serialized_end=44
-  _globals['_PUSHURLREPLY']._serialized_start=46
-  _globals['_PUSHURLREPLY']._serialized_end=75
-  _globals['_REGISTEREQUEST']._serialized_start=77
-  _globals['_REGISTEREQUEST']._serialized_end=110
-  _globals['_REGISTERESPONSE']._serialized_start=112
-  _globals['_REGISTERESPONSE']._serialized_end=146
-  _globals['_DISTRIBUTEURLREQUEST']._serialized_start=148
-  _globals['_DISTRIBUTEURLREQUEST']._serialized_end=183
-  _globals['_DISTRIBUTEURLRESPONSE']._serialized_start=185
-  _globals['_DISTRIBUTEURLRESPONSE']._serialized_end=223
-  _globals['_HEARTBEATQUERY']._serialized_start=225
-  _globals['_HEARTBEATQUERY']._serialized_end=256
-  _globals['_HEARTBEATREPLY']._serialized_start=258
-  _globals['_HEARTBEATREPLY']._serialized_end=289
-  _globals['_FOLDERCHUNK']._serialized_start=291
-  _globals['_FOLDERCHUNK']._serialized_end=353
-  _globals['_UPLOADSTATUS']._serialized_start=355
-  _globals['_UPLOADSTATUS']._serialized_end=403
-  _globals['_URLMANAGER']._serialized_start=405
-  _globals['_URLMANAGER']._serialized_end=510
-  _globals['_SPIDERSNODE']._serialized_start=513
-  _globals['_SPIDERSNODE']._serialized_end=641
-  _globals['_FILETRANSFER']._serialized_start=643
-  _globals['_FILETRANSFER']._serialized_end=704
+  _globals['_PUSHURLREQUEST']._serialized_start=44
+  _globals['_PUSHURLREQUEST']._serialized_end=73
+  _globals['_PUSHURLREPLY']._serialized_start=75
+  _globals['_PUSHURLREPLY']._serialized_end=104
+  _globals['_REGISTEREQUEST']._serialized_start=106
+  _globals['_REGISTEREQUEST']._serialized_end=139
+  _globals['_REGISTERESPONSE']._serialized_start=141
+  _globals['_REGISTERESPONSE']._serialized_end=175
+  _globals['_URLTODBREQUEST']._serialized_start=177
+  _globals['_URLTODBREQUEST']._serialized_end=206
+  _globals['_DISTRIBUTEURLREQUEST']._serialized_start=208
+  _globals['_DISTRIBUTEURLREQUEST']._serialized_end=243
+  _globals['_DISTRIBUTEURLRESPONSE']._serialized_start=245
+  _globals['_DISTRIBUTEURLRESPONSE']._serialized_end=283
+  _globals['_HEARTBEATQUERY']._serialized_start=285
+  _globals['_HEARTBEATQUERY']._serialized_end=316
+  _globals['_HEARTBEATREPLY']._serialized_start=318
+  _globals['_HEARTBEATREPLY']._serialized_end=349
+  _globals['_FOLDERCHUNK']._serialized_start=351
+  _globals['_FOLDERCHUNK']._serialized_end=413
+  _globals['_UPLOADSTATUS']._serialized_start=415
+  _globals['_UPLOADSTATUS']._serialized_end=463
+  _globals['_URLMANAGER']._serialized_start=466
+  _globals['_URLMANAGER']._serialized_end=625
+  _globals['_SPIDERSNODE']._serialized_start=628
+  _globals['_SPIDERSNODE']._serialized_end=756
+  _globals['_FILETRANSFER']._serialized_start=758
+  _globals['_FILETRANSFER']._serialized_end=819
 # @@protoc_insertion_point(module_scope)

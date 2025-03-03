@@ -40,9 +40,11 @@ def upload_folder(stub,PATH):
     chunks = generate_chunk(PATH)
     response = stub.UploadFolder(chunks)
     print(response.message)
+    return response
 
 def push(PATH):
     channel = grpc.insecure_channel('down_disk:8001')
     stub = Dvrpc_pb2_grpc.FileTransferStub(channel)
-    upload_folder(stub,PATH)
+    response=upload_folder(stub,PATH)
+    return response
 

@@ -42,6 +42,9 @@ services:
       - type: bind
         source: ./services/grpc/
         target: /app/grpc/
+      - type: bind
+        source: ./services/url-manager/URLdatabase
+        target: /app/URLdatabase
 
   spider-node1:
     build: ./services/spiders
